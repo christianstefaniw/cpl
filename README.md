@@ -1,3 +1,3 @@
 # CPL
 
-My first attempt at making an programming language!
+My first attempt at making a programming language!
