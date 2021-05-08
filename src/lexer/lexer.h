@@ -1,7 +1,7 @@
 typedef struct _token
 {
-    char *name;
-    unsigned int value;
+    char *type;
+    char value;
     struct _token *next;
 } token;
 
