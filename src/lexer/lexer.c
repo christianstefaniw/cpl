@@ -8,10 +8,6 @@
 
 static FILE *file_stream;
 
-static void nav_back(long offset)
-{
-    fseek(file_stream, offset, SEEK_CUR);
-}
 
 static token *append(token *head, char *src, TokenType type)
 {
@@ -38,18 +34,17 @@ static token *append(token *head, char *src, TokenType type)
     return new_tk;
 }
 
-TokenType get_ident(token *head)
+static void get_ident(token *head)
 {
     regex_t ascii_regex;
     regcomp(&ascii_regex, ASCII, 0);
     char buf[2] = "\0";
 
     // todo make buffer helper funcs like expand and stuff
-    char identifier[256];
+    char identifier[256] = "";
     for (buf[0] = next_ch(); regexec(&ascii_regex, buf, 0, NULL, 0) == 0; buf[0] = next_ch())
-    {
         strcat(identifier, buf);
-    }
+
     regfree(&ascii_regex);
     append(head, identifier, ident);
 
@@ -58,9 +53,27 @@ TokenType get_ident(token *head)
     nav_back(-1L);
 }
 
-int next_ch()
+static void get_str_lit(token *head)
+{
+    char buf[2] = "\0";
+
+    // todo make buffer helper funcs like expand and stuff
+    char str[256] = "";
+    for (buf[0] = next_ch(); strcmp(buf, D_QUOTE) != 0; buf[0] = next_ch())
+    {
+        strcat(str, buf);
+    }
+    append(head, str, string);
+}
+
+static inline int next_ch()
 {
     return fgetc(file_stream);
+}
+
+static inline void nav_back(long offset)
+{
+    fseek(file_stream, offset, SEEK_CUR);
 }
 
 void lex(FILE *cpl_file)
@@ -76,8 +89,8 @@ void lex(FILE *cpl_file)
     while ((buf[0] = next_ch()) != EOF)
     {
         if (strstr(SCOL, buf))
-            continue;
-        if (strstr(PLUS, buf))
+            append(head, buf, scol);
+        else if (strstr(PLUS, buf))
             append(head, buf, plus);
         else if (strstr(LPAR, buf))
             append(head, buf, lpar);
@@ -85,6 +98,8 @@ void lex(FILE *cpl_file)
             append(head, buf, rpar);
         else if (regexec(&numbers, buf, 0, NULL, 0) == 0)
             append(head, buf, number);
+        else if (strstr(D_QUOTE, buf))
+            get_str_lit(head);
         else
         {
             // go back 1 char in file because the loop will read an
@@ -98,6 +113,6 @@ void lex(FILE *cpl_file)
 
     for (; head != NULL; head = head->next)
     {
-        printf("token value: %s\n", head->value);
+        printf("type: %s, value: %s\n", string_from_tkn_type(head->type), head->value);
     }
 }
