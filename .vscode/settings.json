@@ -4,6 +4,7 @@
         "helpers.h": "c",
         "regex.h": "c",
         "lexer.h": "c",
-        "type_traits": "c"
+        "type_traits": "c",
+        "cpl.h": "c"
     }
 }

@@ -1,8 +1,18 @@
-typedef struct _token
+enum
 {
-    char *type;
-    char value;
-    struct _token *next;
-} token;
+    null = 0,
+    operator,
+    special_char,
+    str,
+    symbol,
+    number,
+};
+
+typedef struct _identifier
+{
+    int token;
+    char *value;
+    struct _identifier *next;
+} identifier;
 
 void lex(FILE *cpl_file);
