@@ -5,12 +5,6 @@
 #include "lexer.h"
 #include "../helpers.h"
 
-#define NEWLINE "\n"
-#define OPERATORS "+-*/"
-#define SPECIAL_CHARS "(){},;=:"
-#define SYMBOLS_PATTERN "[a-zA-Z]"
-#define NON_ASCII_PATTERN "[\x00-\x7F]"
-
 token *append(token *head, char *src, int type)
 {
     token *cursor;
@@ -36,28 +30,24 @@ token *append(token *head, char *src, int type)
     return new_tk;
 }
 
-
 void lex(FILE *cpl_file)
 {
-    regex_t symbol_regex;
-
-    regcomp(&symbol_regex, SYMBOLS_PATTERN, 0);
     token *head = malloc(sizeof(token));
     char buf[2] = "\0";
 
     while ((buf[0] = fgetc(cpl_file)) != EOF)
     {
-        if (strstr(NEWLINE, buf))
+        if (strstr(SCOL, buf))
             continue;
-        if (strstr(OPERATORS, buf))
-            append(head, buf, operator);
-        else if (strstr(SPECIAL_CHARS, buf))
-            append(head, buf, special_char);
-        else if (regexec(&symbol_regex, buf, 0, NULL, 0) == 0)
-            printf(buf);
+        if (strstr(PLUS, buf))
+            append(head, buf, plus);
+        else if (strstr(LPAR, buf))
+            append(head, buf, lpar);
+        else if (strstr(RPAR, buf))
+            append(head, buf, rpar);
+        else if (strstr(PLUS, buf))
+            append(head, buf, plus);
     };
-
-    regfree(&symbol_regex);
 
     for (; head != NULL; head = head->next)
         printf(head->value);

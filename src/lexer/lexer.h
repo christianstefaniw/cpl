@@ -1,11 +1,19 @@
 enum
 {
-    operator,
-    special_char,
-    str,
-    symbol,
+    scol,
     number,
+    prnt,
+    lpar,
+    rpar,
+    plus,
 };
+
+#define SCOL ";"
+#define NUMBER "^[0-9]+$"
+#define PRNT "print"
+#define LPAR "("
+#define RPAR ")"
+#define PLUS "+"
 
 typedef struct _token
 {
