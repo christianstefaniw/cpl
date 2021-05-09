@@ -1,6 +1,5 @@
 enum
 {
-    null = 0,
     operator,
     special_char,
     str,
@@ -8,11 +7,11 @@ enum
     number,
 };
 
-typedef struct _identifier
+typedef struct _token
 {
-    int token;
+    int type;
     char *value;
-    struct _identifier *next;
-} identifier;
+    struct _token *next;
+} token;
 
 void lex(FILE *cpl_file);
