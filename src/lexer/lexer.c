@@ -8,8 +8,17 @@
 
 static FILE *file_stream;
 
+static token_type get_ident_type(const char *ident_str)
+{
+    if (strcmp(ident_str, PRNT) == 0)
+        return prnt;
+    else if (strcmp(ident_str, FUNC) == 0)
+        return func;
 
-static token *append(token *head, char *src, TokenType type)
+    return ident;
+}
+
+static token *append(token *head, char *src, token_type type)
 {
     token *cursor;
     token *new_tk = malloc(sizeof(token));
@@ -36,6 +45,7 @@ static token *append(token *head, char *src, TokenType type)
 
 static void get_ident(token *head)
 {
+    token_type tk_type;
     regex_t ascii_regex;
     regcomp(&ascii_regex, ASCII, 0);
     char buf[2] = "\0";
@@ -45,8 +55,10 @@ static void get_ident(token *head)
     for (buf[0] = next_ch(); regexec(&ascii_regex, buf, 0, NULL, 0) == 0; buf[0] = next_ch())
         strcat(identifier, buf);
 
+    tk_type = get_ident_type(identifier);
+
     regfree(&ascii_regex);
-    append(head, identifier, ident);
+    append(head, identifier, tk_type);
 
     // go back 1 char in file because the for loop will read an
     // extra char that the main lex loop should read
@@ -66,17 +78,17 @@ static void get_str_lit(token *head)
     append(head, str, string);
 }
 
-static inline int next_ch()
+static int next_ch()
 {
     return fgetc(file_stream);
 }
 
-static inline void nav_back(long offset)
+static void nav_back(long offset)
 {
     fseek(file_stream, offset, SEEK_CUR);
 }
 
-void lex(FILE *cpl_file)
+token *lex(FILE *cpl_file)
 {
     file_stream = cpl_file;
 
@@ -85,13 +97,15 @@ void lex(FILE *cpl_file)
     regcomp(&numbers, NUMBER, 0);
     token *head = malloc(sizeof(token));
     char buf[2] = "\0";
-
+    
     while ((buf[0] = next_ch()) != EOF)
     {
-        if (strstr(SCOL, buf))
+        if (isspace(buf[0]))
+            continue;
+        else if (strstr(SCOL, buf))
             append(head, buf, scol);
-        else if (strstr(PLUS, buf))
-            append(head, buf, plus);
+        else if (strstr(ADD, buf))
+            append(head, buf, add);
         else if (strstr(LPAR, buf))
             append(head, buf, lpar);
         else if (strstr(RPAR, buf))
@@ -100,6 +114,12 @@ void lex(FILE *cpl_file)
             append(head, buf, number);
         else if (strstr(D_QUOTE, buf))
             get_str_lit(head);
+        else if (strstr(LBRACE, buf))
+            append(head, buf, lbrace);
+        else if (strstr(RBRACE, buf))
+            append(head, buf, rbrace);
+        else if (strstr(EQUAL, buf))
+            append(head, buf, eq);
         else
         {
             // go back 1 char in file because the loop will read an
@@ -113,6 +133,8 @@ void lex(FILE *cpl_file)
 
     for (; head != NULL; head = head->next)
     {
-        printf("type: %s, value: %s\n", string_from_tkn_type(head->type), head->value);
+        printf("type: %i, value: %s\n", head->type, head->value);
     }
+
+    return head;
 }

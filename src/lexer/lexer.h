@@ -1,47 +1,51 @@
 typedef enum
 {
     scol,
+    prnt,
     number,
     ident,
     lpar,
     rpar,
-    plus,
+    add,
+    subtract,
     string,
-} TokenType;
+    eq,
+    func,
+    lbrace,
+    rbrace,
+    comma,
 
-static inline char *string_from_tkn_type(TokenType type)
-{
-    static const char *strings[] = {"scol",
-                                    "number",
-                                    "ident",
-                                    "lpar",
-                                    "rpar",
-                                    "plus",
-                                    "string"};
+} token_type;
 
-    return (char *)strings[type];
-}
 
 #define SCOL ";"
 #define NUMBER "^[0-9]$"
 #define PRNT "print"
 #define LPAR "("
 #define RPAR ")"
-#define PLUS "+"
+#define ADD "+"
+#define SUBTRACT "-"
+#define EQUAL "="
+#define FUNC "fn"
+#define LBRACE "{"
+#define RBRACE "}"
+#define COMMA ","
+
 #define NEWLINE "\n"
 #define ASCII "[a-zA-Z]"
 #define D_QUOTE "\""
 
 typedef struct _token
 {
-    TokenType type;
+    token_type type;
     char *value;
     struct _token *next;
 } token;
 
-static token *append(token *head, char *src, TokenType type);
+static token_type get_ident_type(const char *ident_str);
+static token *append(token *head, char *src, token_type type);
 static void get_ident(token *head);
 static void get_str_lit(token *head);
-static inline int next_ch();
-static inline void nav_back(long offset);
-void lex(FILE *cpl_file);
+static int next_ch();
+static void nav_back(long offset);
+token *lex(FILE *cpl_file);
