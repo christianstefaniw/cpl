@@ -46,19 +46,19 @@ static token *append(token *head, char *src, token_type type)
 static void get_ident(token *head)
 {
     token_type tk_type;
+    growable_buf ident_g;
     regex_t ascii_regex;
     regcomp(&ascii_regex, ASCII, 0);
-    char buf[2] = "\0";
+    char char_buf[2] = "\0";
 
-    // todo make buffer helper funcs like expand and stuff
-    char identifier[256] = "";
-    for (buf[0] = next_ch(); regexec(&ascii_regex, buf, 0, NULL, 0) == 0; buf[0] = next_ch())
-        strcat(identifier, buf);
+    init_growable_buff(&ident_g, 256);
+    for (char_buf[0] = next_ch(); regexec(&ascii_regex, char_buf, 0, NULL, 0) == 0; char_buf[0] = next_ch())
+        insert_growable_buff(&ident_g, char_buf[0]);
 
-    tk_type = get_ident_type(identifier);
+    tk_type = get_ident_type(ident_g.buffer);
 
     regfree(&ascii_regex);
-    append(head, identifier, tk_type);
+    append(head, ident_g.buffer, tk_type);
 
     // go back 1 char in file because the for loop will read an
     // extra char that the main lex loop should read
@@ -67,15 +67,14 @@ static void get_ident(token *head)
 
 static void get_str_lit(token *head)
 {
-    char buf[2] = "\0";
+    char char_buf[2] = "\0";
+    growable_buf str_g;
 
-    // todo make buffer helper funcs like expand and stuff
-    char str[256] = "";
-    for (buf[0] = next_ch(); strcmp(buf, D_QUOTE) != 0; buf[0] = next_ch())
-    {
-        strcat(str, buf);
-    }
-    append(head, str, string);
+    init_growable_buff(&str_g, 256);
+    for (char_buf[0] = next_ch(); strcmp(char_buf, D_QUOTE) != 0; char_buf[0] = next_ch())
+        insert_growable_buff(&str_g, char_buf[0]);
+
+    append(head, str_g.buffer, string);
 }
 
 static int next_ch()
@@ -96,30 +95,30 @@ token *lex(FILE *cpl_file)
 
     regcomp(&numbers, NUMBER, 0);
     token *head = malloc(sizeof(token));
-    char buf[2] = "\0";
-    
-    while ((buf[0] = next_ch()) != EOF)
+    char char_buf[2] = "\0";
+
+    while ((char_buf[0] = next_ch()) != EOF)
     {
-        if (isspace(buf[0]))
+        if (isspace(char_buf[0]))
             continue;
-        else if (strstr(SCOL, buf))
-            append(head, buf, scol);
-        else if (strstr(ADD, buf))
-            append(head, buf, add);
-        else if (strstr(LPAR, buf))
-            append(head, buf, lpar);
-        else if (strstr(RPAR, buf))
-            append(head, buf, rpar);
-        else if (regexec(&numbers, buf, 0, NULL, 0) == 0)
-            append(head, buf, number);
-        else if (strstr(D_QUOTE, buf))
+        else if (strstr(SCOL, char_buf))
+            append(head, char_buf, scol);
+        else if (strstr(ADD, char_buf))
+            append(head, char_buf, add);
+        else if (strstr(LPAR, char_buf))
+            append(head, char_buf, lpar);
+        else if (strstr(RPAR, char_buf))
+            append(head, char_buf, rpar);
+        else if (regexec(&numbers, char_buf, 0, NULL, 0) == 0)
+            append(head, char_buf, number);
+        else if (strstr(D_QUOTE, char_buf))
             get_str_lit(head);
-        else if (strstr(LBRACE, buf))
-            append(head, buf, lbrace);
-        else if (strstr(RBRACE, buf))
-            append(head, buf, rbrace);
-        else if (strstr(EQUAL, buf))
-            append(head, buf, eq);
+        else if (strstr(LBRACE, char_buf))
+            append(head, char_buf, lbrace);
+        else if (strstr(RBRACE, char_buf))
+            append(head, char_buf, rbrace);
+        else if (strstr(EQUAL, char_buf))
+            append(head, char_buf, eq);
         else
         {
             // go back 1 char in file because the loop will read an
@@ -130,11 +129,6 @@ token *lex(FILE *cpl_file)
     };
 
     fclose(file_stream);
-
-    for (; head != NULL; head = head->next)
-    {
-        printf("type: %i, value: %s\n", head->type, head->value);
-    }
 
     return head;
 }

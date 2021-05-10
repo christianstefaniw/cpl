@@ -9,11 +9,11 @@ void parse_expression()
 
 }
 
-void parser(token *head)
+void parse(token *head)
 {
     while (head->next != NULL)
     {
-        
+        printf("type: %i, value:%s\n", head->type, head->value);
         head = head->next;
     }
     

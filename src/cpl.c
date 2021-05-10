@@ -3,6 +3,7 @@
 #include <errno.h>
 #include "helpers.h"
 #include "lexer/lexer.h"
+#include "parser/parser.h"
 
 #define CPL_EXTENSION "cpl"
 
@@ -44,7 +45,7 @@ int main(int argc, char *argv[])
             fprintf(stderr, "%s\n", strerror(errno));
             return 1;
         }
-        lex(cpl_file);
+        parse(lex(cpl_file));
         return 0;
     }
 

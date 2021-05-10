@@ -6,6 +6,7 @@
         "lexer.h": "c",
         "type_traits": "c",
         "cpl.h": "c",
-        "stdlib.h": "c"
+        "stdlib.h": "c",
+        "stdio.h": "c"
     }
 }
