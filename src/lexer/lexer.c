@@ -1,23 +1,23 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <regex.h>
 #include <ctype.h>
+#include <regex.h>
 #include "lexer.h"
 #include "../helpers.h"
 
-static lexer *lxr;
+static lexer *_lxr;
 
 void create_lexer(FILE *stream)
 {
-    lxr = malloc(sizeof lxr);
-    lxr->stream = stream;
-    lxr->curr_char_buf[2] = '\0';
+    _lxr = malloc(sizeof _lxr);
+    _lxr->stream = stream;
+    _lxr->curr_char_buf[2] = '\0';
 }
 
 void free_lexer()
 {
-    free(lxr);
+    free(_lxr);
 }
 
 static token_type get_ident_type(const char *ident_str)
@@ -74,49 +74,46 @@ static token *get_str_lit()
 
 static int next_ch()
 {
-    return fgetc(lxr->stream);
+    return fgetc(_lxr->stream);
 }
 
 static void nav_back(long offset)
 {
-    fseek(lxr->stream, offset, SEEK_CUR);
+    fseek(_lxr->stream, offset, SEEK_CUR);
 }
 
 token *get_token()
 {
-    regex_t numbers;
-    regcomp(&numbers, NUMBER, 0);
-
-    while ((lxr->curr_char_buf[0] = next_ch()) != EOF)
+    while ((_lxr->curr_char_buf[0] = next_ch()) != EOF)
     {
-        if (isspace(lxr->curr_char_buf[0]))
+        if (isspace(_lxr->curr_char_buf[0]))
             continue;
-        else if (strstr(SCOL, lxr->curr_char_buf))
-            return new_token(scol, lxr->curr_char_buf);
-        else if (strstr(ADD, lxr->curr_char_buf))
-            return new_token(add, lxr->curr_char_buf);
-        else if (strstr(LPAR, lxr->curr_char_buf))
-            return new_token(lpar, lxr->curr_char_buf);
-        else if (strstr(RPAR, lxr->curr_char_buf))
-            return new_token(rpar, lxr->curr_char_buf);
-        else if (regexec(&numbers, lxr->curr_char_buf, 0, NULL, 0) == 0)
-            return new_token(number, lxr->curr_char_buf);
-        else if (strstr(D_QUOTE, lxr->curr_char_buf))
+        else if (strstr(SCOL, _lxr->curr_char_buf))
+            return new_token(scol, _lxr->curr_char_buf);
+        else if (strstr(ADD, _lxr->curr_char_buf))
+            return new_token(add, _lxr->curr_char_buf);
+        else if (strstr(LPAR, _lxr->curr_char_buf))
+            return new_token(lpar, _lxr->curr_char_buf);
+        else if (strstr(RPAR, _lxr->curr_char_buf))
+            return new_token(rpar, _lxr->curr_char_buf);
+        else if (isdigit(_lxr->curr_char_buf[0]))
+            return new_token(number, _lxr->curr_char_buf);
+        else if (strstr(D_QUOTE, _lxr->curr_char_buf))
             return get_str_lit();
-        else if (strstr(LBRACE, lxr->curr_char_buf))
-            return new_token(lbrace, lxr->curr_char_buf);
-        else if (strstr(RBRACE, lxr->curr_char_buf))
-            return new_token(rbrace, lxr->curr_char_buf);
-        else if (strstr(EQUAL, lxr->curr_char_buf))
-            return new_token(eq, lxr->curr_char_buf);
+        else if (strstr(LBRACE, _lxr->curr_char_buf))
+            return new_token(lbrace, _lxr->curr_char_buf);
+        else if (strstr(RBRACE, _lxr->curr_char_buf))
+            return new_token(rbrace, _lxr->curr_char_buf);
+        else if (strstr(EQUAL, _lxr->curr_char_buf))
+            return new_token(eq, _lxr->curr_char_buf);
         else
         {
             nav_back(-1L);
             return get_ident();
         }
     };
-
-    fclose(lxr->stream);
+    
+    fclose(_lxr->stream);
 
     return NULL;
 }
