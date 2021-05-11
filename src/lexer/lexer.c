@@ -6,7 +6,18 @@
 #include "lexer.h"
 #include "../helpers.h"
 
-static FILE *file_stream;
+static lexer *lxr;
+
+void create_lexer(FILE *stream)
+{
+    lxr = malloc(sizeof lxr);
+    lxr->stream = stream;
+}
+
+void free_lexer()
+{
+    free(lxr);
+}
 
 static token_type get_ident_type(const char *ident_str)
 {
@@ -18,54 +29,37 @@ static token_type get_ident_type(const char *ident_str)
     return ident;
 }
 
-static token *append(token *head, char *src, token_type type)
+static token *new_token(token_type type, char *value)
 {
-    token *cursor;
-    token *new_tk = malloc(sizeof(token));
-
-    new_tk->value = strdup(src);
+    token *new_tk = malloc(sizeof new_tk);
     new_tk->type = type;
-    new_tk->next = NULL;
-
-    if (head->value == NULL)
-    {
-        *head = *new_tk;
-        return head;
-    }
-
-    cursor = head;
-
-    while (cursor->next != NULL)
-        cursor = cursor->next;
-
-    cursor->next = new_tk;
-
+    new_tk->value = value;
     return new_tk;
 }
 
-static void get_ident(token *head)
+static token *get_ident()
 {
     token_type tk_type;
     growable_buf ident_g;
-    regex_t ascii_regex;
-    regcomp(&ascii_regex, ASCII, 0);
+    regex_t ident_reg;
+
+    regcomp(&ident_reg, IDENT, 0);
     char char_buf[2] = "\0";
 
     init_growable_buff(&ident_g, 256);
-    for (char_buf[0] = next_ch(); regexec(&ascii_regex, char_buf, 0, NULL, 0) == 0; char_buf[0] = next_ch())
+
+    for (char_buf[0] = next_ch(); regexec(&ident_reg, char_buf, 0, NULL, 0) == 0; char_buf[0] = next_ch())
         insert_growable_buff(&ident_g, char_buf[0]);
 
     tk_type = get_ident_type(ident_g.buffer);
+    regfree(&ident_reg);
 
-    regfree(&ascii_regex);
-    append(head, ident_g.buffer, tk_type);
-
-    // go back 1 char in file because the for loop will read an
-    // extra char that the main lex loop should read
     nav_back(-1L);
+
+    return new_token(tk_type, ident_g.buffer);
 }
 
-static void get_str_lit(token *head)
+static token *get_str_lit()
 {
     char char_buf[2] = "\0";
     growable_buf str_g;
@@ -74,27 +68,24 @@ static void get_str_lit(token *head)
     for (char_buf[0] = next_ch(); strcmp(char_buf, D_QUOTE) != 0; char_buf[0] = next_ch())
         insert_growable_buff(&str_g, char_buf[0]);
 
-    append(head, str_g.buffer, string);
+    return new_token(string, str_g.buffer);
 }
 
 static int next_ch()
 {
-    return fgetc(file_stream);
+    return fgetc(lxr->stream);
 }
 
 static void nav_back(long offset)
 {
-    fseek(file_stream, offset, SEEK_CUR);
+    fseek(lxr->stream, offset, SEEK_CUR);
 }
 
-token *lex(FILE *cpl_file)
+token *get_token()
 {
-    file_stream = cpl_file;
-
     regex_t numbers;
 
     regcomp(&numbers, NUMBER, 0);
-    token *head = malloc(sizeof(token));
     char char_buf[2] = "\0";
 
     while ((char_buf[0] = next_ch()) != EOF)
@@ -102,33 +93,31 @@ token *lex(FILE *cpl_file)
         if (isspace(char_buf[0]))
             continue;
         else if (strstr(SCOL, char_buf))
-            append(head, char_buf, scol);
+            return new_token(scol, char_buf);
         else if (strstr(ADD, char_buf))
-            append(head, char_buf, add);
+            return new_token(add, char_buf);
         else if (strstr(LPAR, char_buf))
-            append(head, char_buf, lpar);
+            return new_token(lpar, char_buf);
         else if (strstr(RPAR, char_buf))
-            append(head, char_buf, rpar);
+            return new_token(rpar, char_buf);
         else if (regexec(&numbers, char_buf, 0, NULL, 0) == 0)
-            append(head, char_buf, number);
+            return new_token(number, char_buf);
         else if (strstr(D_QUOTE, char_buf))
-            get_str_lit(head);
+            return get_str_lit();
         else if (strstr(LBRACE, char_buf))
-            append(head, char_buf, lbrace);
+            return new_token(lbrace, char_buf);
         else if (strstr(RBRACE, char_buf))
-            append(head, char_buf, rbrace);
+            return new_token(rbrace, char_buf);
         else if (strstr(EQUAL, char_buf))
-            append(head, char_buf, eq);
+            return new_token(eq, char_buf);
         else
         {
-            // go back 1 char in file because the loop will read an
-            // extra char that the ident loop should read
             nav_back(-1L);
-            get_ident(head);
+            return get_ident();
         }
     };
 
-    fclose(file_stream);
+    fclose(lxr->stream);
 
-    return head;
+    return NULL;
 }

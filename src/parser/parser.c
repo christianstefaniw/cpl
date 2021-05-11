@@ -1,20 +1,31 @@
 #include <stdlib.h>
+#include <string.h>
+
+#include "parser.h"
 #include "../lexer/lexer.h"
+#include "../helpers.h"
 
 #define MULTIPLE_SEP ','
 #define END ';'
 
-void parse_expression()
+void parse_expression(token *tk)
 {
+    growable_buf param_buf_g;
+    init_growable_buff(&param_buf_g, 256);
+
+    node *new_node = malloc(sizeof new_node);
+    new_node->name = tk->value;
+    new_node->type = call_exp;
 
 }
 
-void parse(token *head)
+void parse(FILE *stream)
 {
-    while (head->next != NULL)
+    token *curr_token;
+    create_lexer(stream);
+    while ((curr_token = get_token()) != NULL)
     {
-        printf("type: %i, value:%s\n", head->type, head->value);
-        head = head->next;
+        printf(curr_token->value);
     }
-    
+    free_lexer();
 }

@@ -45,7 +45,7 @@ int main(int argc, char *argv[])
             fprintf(stderr, "%s\n", strerror(errno));
             return 1;
         }
-        parse(lex(cpl_file));
+        parse(cpl_file);
         return 0;
     }
 

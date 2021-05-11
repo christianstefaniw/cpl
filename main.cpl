@@ -1,1 +1,1 @@
-fn func(){print("hi");}
+print("hello world");

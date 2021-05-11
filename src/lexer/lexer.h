@@ -16,9 +16,7 @@ typedef enum
     lbrace,
     rbrace,
     comma,
-
 } token_type;
-
 
 #define SCOL ";"
 #define NUMBER "^[0-9]$"
@@ -32,22 +30,29 @@ typedef enum
 #define LBRACE "{"
 #define RBRACE "}"
 #define COMMA ","
+#define IDENT "[a-zA-Z_]"
 
 #define NEWLINE "\n"
-#define ASCII "[a-zA-Z]"
 #define D_QUOTE "\""
+
+typedef struct _lexer
+{
+    FILE* stream;
+} lexer;
 
 typedef struct _token
 {
     token_type type;
     char *value;
-    struct _token *next;
 } token;
 
+
+void create_lexer(FILE *stream);
+void free_lexer();
 static token_type get_ident_type(const char *ident_str);
-static token *append(token *head, char *src, token_type type);
-static void get_ident(token *head);
-static void get_str_lit(token *head);
+static token *new_token(token_type type, char *value);
+static token *get_ident();
+static token *get_str_lit();
 static int next_ch();
 static void nav_back(long offset);
-token *lex(FILE *cpl_file);
+token *get_token();
