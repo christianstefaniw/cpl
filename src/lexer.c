@@ -1,23 +1,30 @@
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
 #include <regex.h>
 #include "lexer.h"
-#include "../helpers.h"
+#include "helpers.h"
 
 static lexer *_lxr;
 
-void create_lexer(FILE *stream)
+void init_lexer(FILE *stream)
 {
     _lxr = malloc(sizeof _lxr);
     _lxr->stream = stream;
     _lxr->curr_char_buf[2] = '\0';
 }
 
-void free_lexer()
+void clean_lexer()
 {
+    fclose(_lxr->stream);
     free(_lxr);
+}
+
+void free_token(token *tk)
+{
+    free(tk);
 }
 
 static token_type get_ident_type(const char *ident_str)
@@ -112,8 +119,8 @@ token *get_token()
             return get_ident();
         }
     };
-    
-    fclose(_lxr->stream);
+
+    clean_lexer();
 
     return NULL;
 }

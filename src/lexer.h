@@ -1,15 +1,13 @@
-#include <stdio.h>
-
 typedef enum
 {
     scol,
     prnt,
-    number,
     ident,
     lpar,
     rpar,
     add,
     subtract,
+    number,
     string,
     eq,
     func,
@@ -38,7 +36,7 @@ typedef enum
 typedef struct _lexer
 {
     FILE* stream;
-    char curr_char_buf[2];
+    char curr_char_buf[1];
 } lexer;
 
 typedef struct _token
@@ -48,7 +46,7 @@ typedef struct _token
 } token;
 
 
-void create_lexer(FILE *stream);
+void init_lexer(FILE *stream);
 void free_lexer();
 static token_type get_ident_type(const char *ident_str);
 static token *new_token(token_type type, char *value);
@@ -57,3 +55,4 @@ static token *get_str_lit();
 static int next_ch();
 static void nav_back(long offset);
 token *get_token();
+void free_token(token *tk);

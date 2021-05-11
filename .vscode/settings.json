@@ -7,6 +7,9 @@
         "type_traits": "c",
         "cpl.h": "c",
         "stdlib.h": "c",
-        "stdio.h": "c"
+        "stdio.h": "c",
+        "typeinfo": "c",
+        "evaluator.h": "c",
+        "parser.h": "c"
     }
 }

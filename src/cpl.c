@@ -2,8 +2,7 @@
 #include <string.h>
 #include <errno.h>
 #include "helpers.h"
-#include "lexer/lexer.h"
-#include "parser/parser.h"
+#include "parser.h"
 
 #define CPL_EXTENSION "cpl"
 
