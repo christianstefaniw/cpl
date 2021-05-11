@@ -32,6 +32,8 @@ typedef enum
 
 #define NEWLINE "\n"
 #define D_QUOTE "\""
+#define MULTIPLE_SEP ','
+#define EOL ';'
 
 typedef struct _lexer
 {

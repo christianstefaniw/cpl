@@ -67,6 +67,19 @@ static token *get_ident()
     return new_token(tk_type, ident_g.buffer);
 }
 
+static token *get_num_lit()
+{
+    char num_buf[2] = "\0";
+    growable_buf num_g;
+
+    init_growable_buff(&num_g, 256);
+    for (num_buf[0] = next_ch(); isdigit(num_buf[0]); num_buf[0] = next_ch())
+        insert_growable_buff(&num_g, num_buf[0]);
+
+    nav_back(-1L);
+    return new_token(number, num_g.buffer);
+}
+
 static token *get_str_lit()
 {
     char char_buf[2] = "\0";
@@ -74,7 +87,14 @@ static token *get_str_lit()
 
     init_growable_buff(&str_g, 256);
     for (char_buf[0] = next_ch(); strcmp(char_buf, D_QUOTE) != 0; char_buf[0] = next_ch())
+    {
+        if (char_buf[0] == EOL)
+        {
+            fprintf(stderr, "syntax error: missing closing quote(\")\n");
+            exit(1);
+        }
         insert_growable_buff(&str_g, char_buf[0]);
+    }
 
     return new_token(string, str_g.buffer);
 }
@@ -104,7 +124,10 @@ token *get_token()
         else if (strstr(RPAR, _lxr->curr_char_buf))
             return new_token(rpar, _lxr->curr_char_buf);
         else if (isdigit(_lxr->curr_char_buf[0]))
-            return new_token(number, _lxr->curr_char_buf);
+        {
+            nav_back(-1L);
+            return get_num_lit();
+        }
         else if (strstr(D_QUOTE, _lxr->curr_char_buf))
             return get_str_lit();
         else if (strstr(LBRACE, _lxr->curr_char_buf))

@@ -6,10 +6,6 @@
 #include "helpers.h"
 #include "evaluator.h"
 
-#define MULTIPLE_SEP ','
-#define END ';'
-
-
 void *init_node(node *new_node, token *tk, token_type tk_type)
 {
     new_node->value = tk->value;
@@ -22,7 +18,6 @@ node *parse_expression(token *tk)
     init_growable_buff(&param_buf_g, 256);
     node *exp_node = malloc(sizeof exp_node);
     init_node(exp_node, tk, call_exp);
-
 
     while ((tk = get_token())->type != rpar)
     {

@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 
 #include "parser.h"
 #include "evaluator.h"
@@ -11,7 +12,7 @@ void eval(node *expr)
         switch (expr->param->type)
         {
         case num_lit:
-            printf("%f\n", expr->param->value);
+            printf("%i\n", atoi(expr->param->value));
             break;
         case str_lit:
             printf("%s\n", expr->param->value);
