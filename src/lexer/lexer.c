@@ -12,6 +12,7 @@ void create_lexer(FILE *stream)
 {
     lxr = malloc(sizeof lxr);
     lxr->stream = stream;
+    lxr->curr_char_buf[2] = '\0';
 }
 
 void free_lexer()
@@ -84,32 +85,30 @@ static void nav_back(long offset)
 token *get_token()
 {
     regex_t numbers;
-
     regcomp(&numbers, NUMBER, 0);
-    char char_buf[2] = "\0";
 
-    while ((char_buf[0] = next_ch()) != EOF)
+    while ((lxr->curr_char_buf[0] = next_ch()) != EOF)
     {
-        if (isspace(char_buf[0]))
+        if (isspace(lxr->curr_char_buf[0]))
             continue;
-        else if (strstr(SCOL, char_buf))
-            return new_token(scol, char_buf);
-        else if (strstr(ADD, char_buf))
-            return new_token(add, char_buf);
-        else if (strstr(LPAR, char_buf))
-            return new_token(lpar, char_buf);
-        else if (strstr(RPAR, char_buf))
-            return new_token(rpar, char_buf);
-        else if (regexec(&numbers, char_buf, 0, NULL, 0) == 0)
-            return new_token(number, char_buf);
-        else if (strstr(D_QUOTE, char_buf))
+        else if (strstr(SCOL, lxr->curr_char_buf))
+            return new_token(scol, lxr->curr_char_buf);
+        else if (strstr(ADD, lxr->curr_char_buf))
+            return new_token(add, lxr->curr_char_buf);
+        else if (strstr(LPAR, lxr->curr_char_buf))
+            return new_token(lpar, lxr->curr_char_buf);
+        else if (strstr(RPAR, lxr->curr_char_buf))
+            return new_token(rpar, lxr->curr_char_buf);
+        else if (regexec(&numbers, lxr->curr_char_buf, 0, NULL, 0) == 0)
+            return new_token(number, lxr->curr_char_buf);
+        else if (strstr(D_QUOTE, lxr->curr_char_buf))
             return get_str_lit();
-        else if (strstr(LBRACE, char_buf))
-            return new_token(lbrace, char_buf);
-        else if (strstr(RBRACE, char_buf))
-            return new_token(rbrace, char_buf);
-        else if (strstr(EQUAL, char_buf))
-            return new_token(eq, char_buf);
+        else if (strstr(LBRACE, lxr->curr_char_buf))
+            return new_token(lbrace, lxr->curr_char_buf);
+        else if (strstr(RBRACE, lxr->curr_char_buf))
+            return new_token(rbrace, lxr->curr_char_buf);
+        else if (strstr(EQUAL, lxr->curr_char_buf))
+            return new_token(eq, lxr->curr_char_buf);
         else
         {
             nav_back(-1L);

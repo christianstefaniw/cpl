@@ -38,6 +38,7 @@ typedef enum
 typedef struct _lexer
 {
     FILE* stream;
+    char curr_char_buf[2];
 } lexer;
 
 typedef struct _token

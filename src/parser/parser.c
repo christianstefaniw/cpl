@@ -16,16 +16,17 @@ void parse_expression(token *tk)
     node *new_node = malloc(sizeof new_node);
     new_node->name = tk->value;
     new_node->type = call_exp;
-
+    printf(tk->value);
 }
 
 void parse(FILE *stream)
 {
     token *curr_token;
     create_lexer(stream);
+
     while ((curr_token = get_token()) != NULL)
     {
-        printf(curr_token->value);
+        parse_expression(curr_token);
     }
     free_lexer();
 }
