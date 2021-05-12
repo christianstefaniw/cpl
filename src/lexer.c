@@ -157,6 +157,6 @@ token *get_token()
     };
 
     clean_lexer();
-    
+
     return NULL;
 }

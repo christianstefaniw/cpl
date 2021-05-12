@@ -37,6 +37,5 @@ void parse(FILE *stream)
     while ((curr_token = get_token()) != NULL)
     {
         eval(parse_expression(curr_token));
-        free_token(curr_token);
     }
 }
