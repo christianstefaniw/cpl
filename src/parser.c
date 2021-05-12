@@ -19,11 +19,7 @@ node *parse_expression(token *tk)
             else if (curr_node->right == NULL)
                 curr_node->right = tk;
         }
-        else if (tk->type == add)
-        {
-            curr_node->op = tk;
-        }
-        else if (tk->type == mul)
+        else if (tk->type == add || tk->type == mul || tk->type == divi || tk->type == subt)
         {
             curr_node->op = tk;
         }

@@ -21,7 +21,6 @@ void eval(node *nd)
     case divi:
         printf("%i\n", atoi(nd->left->value) / atoi(nd->right->value));
         break;
-    default:
-        free(nd);
     }
+    free(nd);
 }
