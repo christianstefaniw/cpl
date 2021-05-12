@@ -10,6 +10,7 @@
         "stdio.h": "c",
         "typeinfo": "c",
         "evaluator.h": "c",
-        "parser.h": "c"
+        "parser.h": "c",
+        "compare": "c"
     }
 }

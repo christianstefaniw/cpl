@@ -10,7 +10,6 @@ typedef enum
     number,
     string,
     eq,
-    func,
     lbrace,
     rbrace,
     comma,
@@ -58,3 +57,4 @@ static int next_ch();
 static void nav_back(long offset);
 token *get_token();
 void free_token(token *tk);
+char peek_ch();

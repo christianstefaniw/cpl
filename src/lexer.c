@@ -31,8 +31,6 @@ static token_type get_ident_type(const char *ident_str)
 {
     if (strcmp(ident_str, PRNT) == 0)
         return prnt;
-    else if (strcmp(ident_str, FUNC) == 0)
-        return func;
 
     return ident;
 }
@@ -56,13 +54,14 @@ static token *get_ident()
 
     init_growable_buff(&ident_g, 256);
 
-    for (char_buf[0] = next_ch(); regexec(&ident_reg, char_buf, 0, NULL, 0) == 0; char_buf[0] = next_ch())
+    for (char_buf[0] = peek_ch(); regexec(&ident_reg, char_buf, 0, NULL, 0) == 0; char_buf[0] = peek_ch())
+    {
         insert_growable_buff(&ident_g, char_buf[0]);
+        char_buf[0] = next_ch();
+    }
 
     tk_type = get_ident_type(ident_g.buffer);
     regfree(&ident_reg);
-
-    nav_back(-1L);
 
     return new_token(tk_type, ident_g.buffer);
 }
@@ -73,10 +72,12 @@ static token *get_num_lit()
     growable_buf num_g;
 
     init_growable_buff(&num_g, 256);
-    for (num_buf[0] = next_ch(); isdigit(num_buf[0]); num_buf[0] = next_ch())
+    for (num_buf[0] = peek_ch(); isdigit(num_buf[0]); num_buf[0] = peek_ch())
+    {
         insert_growable_buff(&num_g, num_buf[0]);
+        num_buf[0] = next_ch();
+    }
 
-    nav_back(-1L);
     return new_token(number, num_g.buffer);
 }
 
@@ -109,6 +110,16 @@ static void nav_back(long offset)
     fseek(_lxr->stream, offset, SEEK_CUR);
 }
 
+char peek_ch()
+{
+    int c;
+
+    c = fgetc(_lxr->stream);
+    ungetc(c, _lxr->stream);
+
+    return c;
+}
+
 token *get_token()
 {
     while ((_lxr->curr_char_buf[0] = next_ch()) != EOF)
@@ -136,6 +147,8 @@ token *get_token()
             return new_token(rbrace, _lxr->curr_char_buf);
         else if (strstr(EQUAL, _lxr->curr_char_buf))
             return new_token(eq, _lxr->curr_char_buf);
+        else if (strstr(ADD, _lxr->curr_char_buf))
+            return new_token(add, _lxr->curr_char_buf);
         else
         {
             nav_back(-1L);
