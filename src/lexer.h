@@ -7,7 +7,8 @@ typedef enum
     rpar,
     add,
     mul,
-    subtract,
+    subt,
+    divi,
     number,
     string,
     eq,
@@ -21,13 +22,14 @@ typedef enum
 #define LPAR "("
 #define RPAR ")"
 #define ADD "+"
-#define SUBTRACT "-"
+#define SUBT "-"
 #define EQUAL "="
 #define FUNC "fn"
 #define LBRACE "{"
 #define RBRACE "}"
 #define COMMA ","
 #define MUL "*"
+#define DIVI "/"
 #define IDENT "[a-zA-Z_]"
 
 #define NEWLINE "\n"

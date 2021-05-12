@@ -42,14 +42,14 @@ static token *get_ident()
     regex_t ident_reg;
 
     regcomp(&ident_reg, IDENT, 0);
-    char char_buf[2] = "\0";
+    char curr_char;
 
     init_growable_buff(&ident_g, 256);
 
-    for (char_buf[0] = peek_ch(); regexec(&ident_reg, char_buf, 0, NULL, 0) == 0; char_buf[0] = peek_ch())
+    for (curr_char = peek_ch(); regexec(&ident_reg, &curr_char, 0, NULL, 0) == 0; curr_char = peek_ch())
     {
-        insert_growable_buff(&ident_g, char_buf[0]);
-        char_buf[0] = next_ch();
+        insert_growable_buff(&ident_g, curr_char);
+        curr_char = next_ch();
     }
 
     if (peek_ch() == LPAR[0])
@@ -61,14 +61,14 @@ static token *get_ident()
 
 static token *get_num_lit()
 {
-    char num_buf[2] = "\0";
+    char curr_num;
     growable_buf num_g;
 
     init_growable_buff(&num_g, 256);
-    for (num_buf[0] = peek_ch(); isdigit(num_buf[0]); num_buf[0] = peek_ch())
+    for (curr_num = peek_ch(); isdigit(curr_num); curr_num = peek_ch())
     {
-        insert_growable_buff(&num_g, num_buf[0]);
-        num_buf[0] = next_ch();
+        insert_growable_buff(&num_g, curr_num);
+        curr_num = next_ch();
     }
 
     return new_token(number, num_g.buffer);
@@ -76,18 +76,18 @@ static token *get_num_lit()
 
 static token *get_str_lit()
 {
-    char char_buf[2] = "\0";
+    char curr_char;
     growable_buf str_g;
 
     init_growable_buff(&str_g, 256);
-    for (char_buf[0] = next_ch(); strcmp(char_buf, D_QUOTE) != 0; char_buf[0] = next_ch())
+    for (curr_char = next_ch(); curr_char != D_QUOTE[0]; curr_char = next_ch())
     {
-        if (char_buf[0] == EOL)
+        if (curr_char == EOL)
         {
             fprintf(stderr, "syntax error: missing closing quote(\")\n");
             exit(1);
         }
-        insert_growable_buff(&str_g, char_buf[0]);
+        insert_growable_buff(&str_g, curr_char);
     }
 
     return new_token(string, str_g.buffer);
@@ -144,6 +144,10 @@ token *get_token()
             return new_token(add, _lxr->curr_char_buf);
         else if (strstr(MUL, _lxr->curr_char_buf))
             return new_token(mul, _lxr->curr_char_buf);
+        else if (strstr(SUBT, _lxr->curr_char_buf))
+            return new_token(subt, _lxr->curr_char_buf);
+        else if (strstr(DIVI, _lxr->curr_char_buf))
+            return new_token(divi, _lxr->curr_char_buf);
         else
         {
             nav_back(-1L);
