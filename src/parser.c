@@ -23,10 +23,28 @@ node *parse_expression(token *tk)
         {
             curr_node->op = tk;
         }
+        else if (tk->type == mul)
+        {
+            curr_node->op = tk;
+        }
         tk = get_token();
     }
 
     return curr_node;
+}
+
+node *parse_fn_call(token *tk)
+{
+    
+}
+
+node *parse_token(token *tk)
+{
+    if (tk->type == number)
+        return parse_expression(tk);
+    else if (tk->type == fn_call)
+        return parse_fn_call(tk);
+    
 }
 
 void parse(FILE *stream)
@@ -36,6 +54,7 @@ void parse(FILE *stream)
 
     while ((curr_token = get_token()) != NULL)
     {
-        eval(parse_expression(curr_token));
+        node *parsed_token = parse_token(curr_token);
+        eval(parsed_token);
     }
 }

@@ -12,5 +12,8 @@ void eval(node *nd)
     case add:
         printf("%i\n", atoi(nd->left->value) + atoi(nd->right->value));
         free(nd);
+    case mul:
+        printf("%i\n", atoi(nd->left->value) * atoi(nd->right->value));
+        free(nd);
     }
 }

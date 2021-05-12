@@ -13,7 +13,7 @@ void init_lexer(FILE *stream)
 {
     _lxr = malloc(sizeof _lxr);
     _lxr->stream = stream;
-    _lxr->curr_char_buf[2] = '\0';
+    _lxr->curr_char_buf[1] = '\0';
 }
 
 void clean_lexer()
@@ -25,14 +25,6 @@ void clean_lexer()
 void free_token(token *tk)
 {
     free(tk);
-}
-
-static token_type get_ident_type(const char *ident_str)
-{
-    if (strcmp(ident_str, PRNT) == 0)
-        return prnt;
-
-    return ident;
 }
 
 static token *new_token(token_type type, char *value)
@@ -60,7 +52,8 @@ static token *get_ident()
         char_buf[0] = next_ch();
     }
 
-    tk_type = get_ident_type(ident_g.buffer);
+    if (peek_ch() == LPAR[0])
+        tk_type = fn_call;
     regfree(&ident_reg);
 
     return new_token(tk_type, ident_g.buffer);
@@ -149,6 +142,8 @@ token *get_token()
             return new_token(eq, _lxr->curr_char_buf);
         else if (strstr(ADD, _lxr->curr_char_buf))
             return new_token(add, _lxr->curr_char_buf);
+        else if (strstr(MUL, _lxr->curr_char_buf))
+            return new_token(mul, _lxr->curr_char_buf);
         else
         {
             nav_back(-1L);
