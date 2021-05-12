@@ -5,14 +5,12 @@
 #include "parser.h"
 #include "evaluator.h"
 
-void eval(token *tk)
+void eval(node *nd)
 {
-    if (tk->type == call_exp && strcmp(tk->value, PRNT) == 0)
+    switch (nd->op->type)
     {
-        switch (tk->type)
-        {
-        default:
-            printf("type not supported yet :(\n");
-        }
+    case add:
+        printf("%i\n", atoi(nd->left->value) + atoi(nd->right->value));
+        free(nd);
     }
 }

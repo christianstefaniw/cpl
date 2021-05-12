@@ -6,21 +6,27 @@
 #include "helpers.h"
 #include "evaluator.h"
 
-
-expr_node *parse_equation(){}
-
-token *parse_token(token *tk)
+node *parse_expression(token *tk)
 {
-    switch (tk->type)
+    node *curr_node = malloc(sizeof curr_node);
+
+    while (tk->type != scol)
     {
-        case(lpar):
-            parse_expression(tk);
+        if (tk->type == number)
+        {
+            if (curr_node->left == NULL)
+                curr_node->left = tk;
+            else if (curr_node->right == NULL)
+                curr_node->right = tk;
+        }
+        else if (tk->type == add)
+        {
+            curr_node->op = tk;
+        }
+        tk = get_token();
     }
-}
 
-token *parse_expression(token *tk)
-{
-    
+    return curr_node;
 }
 
 void parse(FILE *stream)
@@ -30,7 +36,6 @@ void parse(FILE *stream)
 
     while ((curr_token = get_token()) != NULL)
     {
-        printf("%s\n", curr_token->value);
         eval(parse_expression(curr_token));
         free_token(curr_token);
     }

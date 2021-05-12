@@ -6,11 +6,11 @@ typedef enum
     call_exp,
 } parsed_type;
 
-typedef struct _expr_node
+typedef struct node
 {
     token *left, *right, *op;
-} expr_node;
+} node;
 
 token *parse_token(token *tk);
-token *parse_expression(token *tk);
+node *parse_expression(token *tk);
 void parse(FILE *stream);
