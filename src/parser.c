@@ -6,9 +6,9 @@
 #include "helpers.h"
 #include "evaluator.h"
 
-node *parse_expression(token *tk)
+expression_node *parse_expression(token *tk)
 {
-    node *curr_node = malloc(sizeof curr_node);
+    expression_node *curr_node = malloc(sizeof curr_node);
 
     while (tk->type != scol)
     {
@@ -23,18 +23,18 @@ node *parse_expression(token *tk)
         {
             curr_node->op = tk;
         }
-        tk = get_token();
+        tk = get_token(no_peek);
     }
 
     return curr_node;
 }
 
-node *parse_fn_call(token *tk)
+void *parse_fn_call(token *tk)
 {
     
 }
 
-node *parse_token(token *tk)
+expression_node *parse_token(token *tk)
 {
     if (tk->type == number)
         return parse_expression(tk);
@@ -48,9 +48,9 @@ void parse(FILE *stream)
     token *curr_token;
     init_lexer(stream);
 
-    while ((curr_token = get_token()) != NULL)
+    while ((curr_token = get_token(no_peek)) != NULL)
     {
-        node *parsed_token = parse_token(curr_token);
+        expression_node *parsed_token = parse_token(curr_token);
         eval(parsed_token);
     }
 }

@@ -113,9 +113,9 @@ char peek_ch()
     return c;
 }
 
-token *get_token()
+token *get_token(should_peek p)
 {
-    while ((_lxr->curr_char_buf[0] = next_ch()) != EOF)
+    while ((_lxr->curr_char_buf[0] = (p == peek ? peek_ch() : next_ch())) != EOF)
     {
         if (isspace(_lxr->curr_char_buf[0]))
             continue;

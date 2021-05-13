@@ -5,7 +5,7 @@
 #include "parser.h"
 #include "evaluator.h"
 
-void eval(node *nd)
+void eval(expression_node *nd)
 {
     switch (nd->op->type)
     {

@@ -7,12 +7,13 @@ typedef enum
     prnt,
 } parsed_type;
 
-typedef struct node
+typedef struct expression_node
 {
     token *left, *right, *op;
-} node;
+} expression_node;
 
-node *parse_token(token *tk);
-node *parse_expression(token *tk);
-node *parse_fn_call(token *tk);
+
+expression_node *parse_token(token *tk);
+expression_node *parse_expression(token *tk);
+void *parse_fn_call(token *tk);
 void parse(FILE *stream);
