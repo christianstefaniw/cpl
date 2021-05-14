@@ -41,7 +41,7 @@ static token *get_ident()
     regex_t regex;
     token *tk;
     growable_buf ident_g;
-    char curr_char;
+    char curr_char, peeked_char;
 
     regcomp(&regex, IDENT, 0);
     init_growable_buff(&ident_g, 256);
@@ -52,18 +52,18 @@ static token *get_ident()
         curr_char = next_ch();
     }
 
-    tk_type = get_ident_type(ident_g.buffer);
+    peeked_char = peek_ch();
+    tk_type = get_ident_type(ident_g.buffer, peeked_char);
 
     return new_token(tk_type, ident_g.buffer);
 }
 
-static token_type get_ident_type(char *tk_value)
+static token_type get_ident_type(char *tk_value, char next_char)
 {
-    token_type ident_type;
     if (strcmp(tk_value, FN_DEC) == 0)
-        ident_type = fn_dec;
-
-    return ident_type;
+        return fn_dec;
+    if (strcmp(&next_char, LPAR) == 0)
+        return fn_call;
 }
 
 static token *get_num_lit()

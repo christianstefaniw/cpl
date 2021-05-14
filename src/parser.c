@@ -6,32 +6,63 @@
 #include "helpers.h"
 #include "evaluator.h"
 
-node *parse_expression(token *tk)
-{
-    
-}
-
-void *parse_fn_dec(token *tk)
+void parse_expression(token *tk)
 {
 }
 
-node *parse_token(token *tk)
+void parse_fn_dec(token *tk)
 {
-    if (tk->type == number)
-        return parse_expression(tk);
+}
+
+node *parse_fn_call(token *tk)
+{
+    token *curr_token;
+
+    node *fn_node = malloc(sizeof fn_node);
+    growable_nodes_arr *fn_params = malloc(sizeof fn_params);
+
+    init_growable_nodes_arr(fn_params, 8);
+
+    while (get_token()->type != lpar)
+    {
+        continue;
+    }
+
+    while ((curr_token = get_token())->type != rpar)
+    {
+        node *param_node = malloc(sizeof param_node);
+        param_node->value = curr_token;
+        insert_growable_nodes_arr(fn_params, param_node);
+    }
+
+    fn_node->children = fn_params;
+
+    return fn_node;
+}
+
+void parse_token(token *tk, node *root)
+{
+    growable_nodes_arr *next_level = malloc(sizeof next_level);
+    init_growable_nodes_arr(next_level, 5);
+
+    if (tk->type == fn_call)
+    {
+        root->value = tk;
+        insert_growable_nodes_arr(next_level, parse_fn_call(tk));
+        root->children = next_level;
+    }
 }
 
 void parse(FILE *stream)
 {
+    node *root = malloc(sizeof root);
     token *curr_token;
     init_lexer(stream);
 
     while ((curr_token = get_token()) != NULL)
-    {
-        printf("type: %i, value: %s\n", curr_token->type, curr_token->value);
-        // node *parsed_token = parse_token(curr_token);
-        // eval(parsed_token);
-    }
+        parse_token(curr_token, root);
+
+    eval(root);
 }
 
 void init_growable_nodes_arr(growable_nodes_arr *arr, size_t cap)

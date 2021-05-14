@@ -7,7 +7,7 @@
 
 void init_growable_buff(growable_buf *buf_g, size_t cap)
 {
-    //buf_g->buffer = malloc(cap * sizeof(*(buf_g->buffer)));
+    buf_g->buffer = malloc(cap * sizeof(*(buf_g->buffer)));
     buf_g->cap = cap;
     buf_g->len = 0;
 }
@@ -25,7 +25,6 @@ void insert_growable_buff(growable_buf *buf_g, char elem)
 
 void free_growable_buff(growable_buf *buf_g)
 {
-    free(buf_g->buffer);
     free(buf_g);
 }
 

@@ -32,6 +32,7 @@ typedef enum
 #define DIVI "/"
 #define IDENT "[a-zA-Z_]"
 #define FN_DEC "fn"
+#define PRNT "print"
 
 #define NEWLINE "\n"
 #define D_QUOTE "\""
@@ -60,4 +61,4 @@ static void nav_back(long offset);
 token *get_token();
 void free_token(token *tk);
 char peek_ch();
-static token_type get_ident_type(char *tk_value);
+static token_type get_ident_type(char *tk_value, char next_char);

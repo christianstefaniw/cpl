@@ -4,11 +4,6 @@
 
 typedef struct _node node;
 
-typedef enum
-{
-    prnt,
-} parsed_type;
-
 typedef struct
 {
     size_t cap;
@@ -22,9 +17,10 @@ typedef struct _node
     growable_nodes_arr *children;
 } node;
 
-node *parse_expression(token *tk);
-void *parse_fn_dec(token *tk);
-node *parse_token(token *tk);
+void parse_expression(token *tk);
+void parse_fn_dec(token *tk);
+node *parse_fn_call(token *tk);
+void parse_token(token *tk, node *root);
 void parse(FILE *stream);
 void init_growable_nodes_arr(growable_nodes_arr *arr, size_t cap);
 void insert_growable_nodes_arr(growable_nodes_arr *arr, node *elem);
