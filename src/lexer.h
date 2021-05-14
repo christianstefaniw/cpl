@@ -2,6 +2,7 @@ typedef enum
 {
     scol,
     fn_call,
+    fn_dec,
     ident,
     lpar,
     rpar,
@@ -17,14 +18,7 @@ typedef enum
     comma,
 } token_type;
 
-typedef enum
-{
-    peek,
-    no_peek,
-} should_peek;
-
 #define SCOL ";"
-#define NUMBER "^[0-9]$"
 #define LPAR "("
 #define RPAR ")"
 #define ADD "+"
@@ -37,19 +31,20 @@ typedef enum
 #define MUL "*"
 #define DIVI "/"
 #define IDENT "[a-zA-Z_]"
+#define FN_DEC "fn"
 
 #define NEWLINE "\n"
 #define D_QUOTE "\""
 #define MULTIPLE_SEP ','
 #define EOL ';'
 
-typedef struct _lexer
+typedef struct
 {
-    FILE* stream;
+    FILE *stream;
     char curr_char_buf[1];
 } lexer;
 
-typedef struct _token
+typedef struct
 {
     token_type type;
     char *value;
@@ -57,11 +52,12 @@ typedef struct _token
 
 void init_lexer(FILE *stream);
 void free_lexer();
-static token *new_token(token_type type, char *value);
+token *new_token(token_type type, char *value);
 static token *get_ident();
 static token *get_str_lit();
 static int next_ch();
 static void nav_back(long offset);
-token *get_token(should_peek p);
+token *get_token();
 void free_token(token *tk);
 char peek_ch();
+static token_type get_ident_type(char *tk_value);

@@ -6,41 +6,19 @@
 #include "helpers.h"
 #include "evaluator.h"
 
-expression_node *parse_expression(token *tk)
-{
-    expression_node *curr_node = malloc(sizeof curr_node);
-
-    while (tk->type != scol)
-    {
-        if (tk->type == number)
-        {
-            if (curr_node->left == NULL)
-                curr_node->left = tk;
-            else if (curr_node->right == NULL)
-                curr_node->right = tk;
-        }
-        else if (tk->type == add || tk->type == mul || tk->type == divi || tk->type == subt)
-        {
-            curr_node->op = tk;
-        }
-        tk = get_token(no_peek);
-    }
-
-    return curr_node;
-}
-
-void *parse_fn_call(token *tk)
+node *parse_expression(token *tk)
 {
     
 }
 
-expression_node *parse_token(token *tk)
+void *parse_fn_dec(token *tk)
+{
+}
+
+node *parse_token(token *tk)
 {
     if (tk->type == number)
         return parse_expression(tk);
-    else if (tk->type == fn_call)
-        return parse_fn_call(tk);
-    
 }
 
 void parse(FILE *stream)
@@ -48,9 +26,32 @@ void parse(FILE *stream)
     token *curr_token;
     init_lexer(stream);
 
-    while ((curr_token = get_token(no_peek)) != NULL)
+    while ((curr_token = get_token()) != NULL)
     {
-        expression_node *parsed_token = parse_token(curr_token);
-        eval(parsed_token);
+        printf("type: %i, value: %s\n", curr_token->type, curr_token->value);
+        // node *parsed_token = parse_token(curr_token);
+        // eval(parsed_token);
     }
+}
+
+void init_growable_nodes_arr(growable_nodes_arr *arr, size_t cap)
+{
+    *(arr->nodes) = malloc(cap * sizeof(*(arr->nodes)));
+    arr->cap = cap;
+    arr->len = 0;
+}
+
+void insert_growable_nodes_arr(growable_nodes_arr *arr, node *elem)
+{
+    if (arr->len == arr->cap)
+    {
+        arr->cap *= 2;
+        *(arr->nodes) = realloc(arr->nodes, arr->cap * sizeof(*(arr->nodes)));
+    }
+    arr->nodes[arr->len++] = elem;
+}
+
+void free_growable_nodes_arr(growable_nodes_arr *arr)
+{
+    free(arr);
 }

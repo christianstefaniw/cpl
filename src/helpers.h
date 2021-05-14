@@ -1,4 +1,4 @@
-typedef struct _growable_buf
+typedef struct
 {
     size_t cap;
     size_t len;

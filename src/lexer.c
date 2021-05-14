@@ -27,7 +27,7 @@ void free_token(token *tk)
     free(tk);
 }
 
-static token *new_token(token_type type, char *value)
+token *new_token(token_type type, char *value)
 {
     token *new_tk = malloc(sizeof new_tk);
     new_tk->type = type;
@@ -38,25 +38,32 @@ static token *new_token(token_type type, char *value)
 static token *get_ident()
 {
     token_type tk_type;
+    regex_t regex;
+    token *tk;
     growable_buf ident_g;
-    regex_t ident_reg;
-
-    regcomp(&ident_reg, IDENT, 0);
     char curr_char;
 
+    regcomp(&regex, IDENT, 0);
     init_growable_buff(&ident_g, 256);
 
-    for (curr_char = peek_ch(); regexec(&ident_reg, &curr_char, 0, NULL, 0) == 0; curr_char = peek_ch())
+    for (curr_char = peek_ch(); regexec(&regex, &curr_char, 0, NULL, 0) == 0; curr_char = peek_ch())
     {
         insert_growable_buff(&ident_g, curr_char);
         curr_char = next_ch();
     }
 
-    if (peek_ch() == LPAR[0])
-        tk_type = fn_call;
-    regfree(&ident_reg);
+    tk_type = get_ident_type(ident_g.buffer);
 
     return new_token(tk_type, ident_g.buffer);
+}
+
+static token_type get_ident_type(char *tk_value)
+{
+    token_type ident_type;
+    if (strcmp(tk_value, FN_DEC) == 0)
+        ident_type = fn_dec;
+
+    return ident_type;
 }
 
 static token *get_num_lit()
@@ -113,9 +120,9 @@ char peek_ch()
     return c;
 }
 
-token *get_token(should_peek p)
+token *get_token()
 {
-    while ((_lxr->curr_char_buf[0] = (p == peek ? peek_ch() : next_ch())) != EOF)
+    while ((_lxr->curr_char_buf[0] = next_ch()) != EOF)
     {
         if (isspace(_lxr->curr_char_buf[0]))
             continue;
