@@ -20,7 +20,7 @@ typedef struct _node
 void parse_expression(token *tk);
 void parse_fn_dec(token *tk);
 node *parse_fn_call(token *tk);
-void parse_token(token *tk, node *root);
+node *parse_token(token *tk, node *program);
 void parse(FILE *stream);
 void init_growable_nodes_arr(growable_nodes_arr *arr, size_t cap);
 void insert_growable_nodes_arr(growable_nodes_arr *arr, node *elem);

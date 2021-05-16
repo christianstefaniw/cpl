@@ -35,34 +35,38 @@ node *parse_fn_call(token *tk)
         insert_growable_nodes_arr(fn_params, param_node);
     }
 
+    fn_node->value = tk;
     fn_node->children = fn_params;
 
     return fn_node;
 }
 
-void parse_token(token *tk, node *root)
+node *parse_token(token *tk, node *program)
 {
-    growable_nodes_arr *next_level = malloc(sizeof next_level);
-    init_growable_nodes_arr(next_level, 5);
-
     if (tk->type == fn_call)
-    {
-        root->value = tk;
-        insert_growable_nodes_arr(next_level, parse_fn_call(tk));
-        root->children = next_level;
-    }
+        return parse_fn_call(tk);
 }
 
 void parse(FILE *stream)
 {
-    node *root = malloc(sizeof root);
     token *curr_token;
+    node *curr_node;
+
+    node *program = malloc(sizeof program);
+    growable_nodes_arr *lines = malloc(sizeof lines);
+    init_growable_nodes_arr(lines, 10);
+
     init_lexer(stream);
 
     while ((curr_token = get_token()) != NULL)
-        parse_token(curr_token, root);
+    {
+        curr_node = parse_token(curr_token, program);
+        insert_growable_nodes_arr(lines, curr_node);
+    }
 
-    eval(root);
+    program->children = lines;
+
+    eval(program);
 }
 
 void init_growable_nodes_arr(growable_nodes_arr *arr, size_t cap)
