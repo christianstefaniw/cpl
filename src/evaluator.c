@@ -5,8 +5,34 @@
 #include "parser.h"
 #include "evaluator.h"
 
+void visit_func_call(node *n)
+{
+    if (strcmp(n->value->value, PRNT) == 0)
+    {
+        for (int i = 0; i < n->children->len; i++)
+            printf("%s\n", traverse(n->children->nodes[i])->value->value);
+    }
+}
+
+node *traverse(node *n)
+{
+    // if (n->value != NULL)
+    //    printf("%s\n", n->value->value);
+
+    if (n->children == NULL)
+        return n;
+
+    for (int i = 0; i < n->children->len; i++)
+    {
+        if (n->children->nodes[i]->value->type == fn_call)
+            visit_func_call(n->children->nodes[i]);
+
+        traverse(n->children->nodes[i]);
+    }
+}
+
 void eval(node *program)
 {
-    printf("%i\n", program->children->len);
+    traverse(program);
     free(program);
 }
