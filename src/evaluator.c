@@ -10,7 +10,20 @@ void visit_func_call(node *n)
     if (strcmp(n->value->value, PRNT) == 0)
     {
         for (int i = 0; i < n->children->len; i++)
-            printf("%s\n", traverse(n->children->nodes[i])->value->value);
+        {
+            
+            switch (n->children->nodes[i]->value->type)
+            {
+            case number:
+                printf("%i\n", atoi(traverse(n->children->nodes[i])->value->value));
+                break;
+            case string:
+                printf("%s\n", traverse(n->children->nodes[i])->value->value);
+                break;
+            default:
+                printf("type not supported yet!");
+            }
+        }
     }
 }
 
