@@ -1,2 +1,3 @@
-print("hello, world")
-print(5)
+some_var=2;
+print("hello, world");
+print(some_var);

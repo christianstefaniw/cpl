@@ -16,6 +16,7 @@ typedef enum
     lbrace,
     rbrace,
     comma,
+    assign,
 } token_type;
 
 #define SCOL ";"
@@ -32,7 +33,7 @@ typedef enum
 #define DIVI "/"
 #define IDENT "[a-zA-Z_]"
 #define FN_DEC "fn"
-#define PRNT "print"
+#define ASSIGN "="
 
 #define NEWLINE "\n"
 #define D_QUOTE "\""

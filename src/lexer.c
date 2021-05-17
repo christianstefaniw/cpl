@@ -54,7 +54,6 @@ static token *get_ident()
 
     peeked_char = peek_ch();
     tk_type = get_ident_type(ident_g.buffer, peeked_char);
-
     return new_token(tk_type, ident_g.buffer);
 }
 
@@ -62,8 +61,12 @@ static token_type get_ident_type(char *tk_value, char next_char)
 {
     if (strcmp(tk_value, FN_DEC) == 0)
         return fn_dec;
-    if (strcmp(&next_char, LPAR) == 0)
+    else if (strcmp(&next_char, LPAR) == 0)
         return fn_call;
+    else if (strcmp(&next_char, ASSIGN) == 0)
+        return assign;
+    else
+        return ident;
 }
 
 static token *get_num_lit()
@@ -126,34 +129,36 @@ token *get_token()
     {
         if (isspace(_lxr->curr_char_buf[0]))
             continue;
-        else if (strstr(SCOL, _lxr->curr_char_buf))
+        else if (strcmp(SCOL, _lxr->curr_char_buf) == 0)
             return new_token(scol, _lxr->curr_char_buf);
-        else if (strstr(ADD, _lxr->curr_char_buf))
+        else if (strcmp(ADD, _lxr->curr_char_buf) == 0)
             return new_token(add, _lxr->curr_char_buf);
-        else if (strstr(LPAR, _lxr->curr_char_buf))
+        else if (strcmp(LPAR, _lxr->curr_char_buf) == 0)
             return new_token(lpar, _lxr->curr_char_buf);
-        else if (strstr(RPAR, _lxr->curr_char_buf))
+        else if (strcmp(RPAR, _lxr->curr_char_buf) == 0)
             return new_token(rpar, _lxr->curr_char_buf);
         else if (isdigit(_lxr->curr_char_buf[0]))
         {
             nav_back(-1L);
             return get_num_lit();
         }
-        else if (strstr(D_QUOTE, _lxr->curr_char_buf))
+        else if (strcmp(D_QUOTE, _lxr->curr_char_buf) == 0)
             return get_str_lit();
-        else if (strstr(LBRACE, _lxr->curr_char_buf))
+        else if (strcmp(LBRACE, _lxr->curr_char_buf) == 0)
             return new_token(lbrace, _lxr->curr_char_buf);
-        else if (strstr(RBRACE, _lxr->curr_char_buf))
+        else if (strcmp(ASSIGN, _lxr->curr_char_buf) == 0)
+            return new_token(assign, _lxr->curr_char_buf);
+        else if (strcmp(RBRACE, _lxr->curr_char_buf) == 0)
             return new_token(rbrace, _lxr->curr_char_buf);
-        else if (strstr(EQUAL, _lxr->curr_char_buf))
+        else if (strcmp(EQUAL, _lxr->curr_char_buf) == 0)
             return new_token(eq, _lxr->curr_char_buf);
-        else if (strstr(ADD, _lxr->curr_char_buf))
+        else if (strcmp(ADD, _lxr->curr_char_buf) == 0)
             return new_token(add, _lxr->curr_char_buf);
-        else if (strstr(MUL, _lxr->curr_char_buf))
+        else if (strcmp(MUL, _lxr->curr_char_buf) == 0)
             return new_token(mul, _lxr->curr_char_buf);
-        else if (strstr(SUBT, _lxr->curr_char_buf))
+        else if (strcmp(SUBT, _lxr->curr_char_buf) == 0)
             return new_token(subt, _lxr->curr_char_buf);
-        else if (strstr(DIVI, _lxr->curr_char_buf))
+        else if (strcmp(DIVI, _lxr->curr_char_buf) == 0)
             return new_token(divi, _lxr->curr_char_buf);
         else
         {
