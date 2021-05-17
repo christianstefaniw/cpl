@@ -23,13 +23,13 @@ node *parse_fn_call(token *tk)
 
     init_growable_nodes_arr(fn_params, 8);
 
-    while (get_token()->type != lpar)
+    while (get_token()->type != at)
         continue;
 
-    while ((curr_token = get_token())->type != rpar)
+    while ((curr_token = get_token())->type != scol)
     {
         node *param_node = malloc(sizeof param_node);
-        param_node->value = curr_token;
+        param_node = parse_token(curr_token);
         insert_growable_nodes_arr(fn_params, param_node);
     }
 
@@ -37,13 +37,6 @@ node *parse_fn_call(token *tk)
     fn_node->children = fn_params;
 
     return fn_node;
-}
-
-node *parse_scol(token *tk)
-{
-    node *scol_node = malloc(sizeof scol_node);
-    scol_node->value = tk;
-    return scol_node;
 }
 
 node *parse_assign(token *tk)
@@ -60,7 +53,7 @@ node *parse_assign(token *tk)
         if (curr_token->type == assign)
             continue;
         node *rval_node = malloc(sizeof rval_node);
-        rval_node->value = curr_token;
+        rval_node = parse_token(curr_token);
         insert_growable_nodes_arr(rval, rval_node);
     }
 
@@ -70,14 +63,21 @@ node *parse_assign(token *tk)
     return assign_node;
 }
 
+node *parse_generic(token *tk)
+{
+    node *gen_node = malloc(sizeof gen_node);
+    gen_node->value = tk;
+    return gen_node;
+}
+
 node *parse_token(token *tk)
 {
     if (tk->type == fn_call)
         return parse_fn_call(tk);
     else if (tk->type == assign)
         return parse_assign(tk);
-    else if (tk->type == scol)
-        return parse_scol(tk);
+    else
+        return parse_generic(tk);
 }
 
 void parse(FILE *stream)

@@ -61,7 +61,7 @@ static token_type get_ident_type(char *tk_value, char next_char)
 {
     if (strcmp(tk_value, FN_DEC) == 0)
         return fn_dec;
-    else if (strcmp(&next_char, LPAR) == 0)
+    else if (strcmp(&next_char, AT) == 0)
         return fn_call;
     else if (strcmp(&next_char, ASSIGN) == 0)
         return assign;
@@ -160,6 +160,8 @@ token *get_token()
             return new_token(subt, _lxr->curr_char_buf);
         else if (strcmp(DIVI, _lxr->curr_char_buf) == 0)
             return new_token(divi, _lxr->curr_char_buf);
+        else if (strcmp(AT, _lxr->curr_char_buf) == 0)
+            return new_token(at, _lxr->curr_char_buf);
         else
         {
             nav_back(-1L);

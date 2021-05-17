@@ -13,6 +13,7 @@ typedef enum
     number,
     string,
     eq,
+    at,
     lbrace,
     rbrace,
     comma,
@@ -34,6 +35,7 @@ typedef enum
 #define IDENT "[a-zA-Z_]"
 #define FN_DEC "fn"
 #define ASSIGN "="
+#define AT "@"
 
 #define NEWLINE "\n"
 #define D_QUOTE "\""

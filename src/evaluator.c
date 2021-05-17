@@ -23,8 +23,15 @@ void visit_func_call(node *n, node *program)
             case string:
                 printf("%s\n", traverse(curr_node, program)->value->value);
                 break;
-            case ident:
-                printf("%s\n", find_var(program, curr_node->value->value)->value->value);
+            case ident:;
+                node *var_node = find_var(program, curr_node->value->value);
+                if (var_node->value->type == string)
+                    printf("%s\n", var_node->value->value);
+                else if (var_node->value->type == number)
+                    printf("%i\n", atoi(var_node->value->value));
+                else
+                    printf("identifier not found!\n");
+
                 break;
             default:
                 printf("ERROR!!!\n");
@@ -41,7 +48,7 @@ node *find_var(node *n, char *var)
     {
         curr_node = n->children->nodes[i];
         if (strcmp(curr_node->value->value, var) == 0)
-            return curr_node->children->nodes[curr_node->children->len-1];
+            return curr_node->children->nodes[curr_node->children->len - 1];
         find_var(curr_node->children->nodes[i], var);
     }
 }
