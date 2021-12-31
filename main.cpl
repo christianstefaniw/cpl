@@ -1,3 +1,2 @@
 some_var="hello, world";
-
 print@some_var;
