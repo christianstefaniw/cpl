@@ -1,7 +1,6 @@
 typedef enum
 {
     scol,
-    fn_call,
     fn_dec,
     ident,
     lpar,
@@ -13,11 +12,13 @@ typedef enum
     number,
     string,
     eq,
-    at,
+    fn_call,
     lbrace,
     rbrace,
     comma,
     assign,
+    comment,
+    newline,
 } token_type;
 
 #define SCOL ";"
@@ -33,13 +34,13 @@ typedef enum
 #define MUL "*"
 #define DIVI "/"
 #define IDENT "[a-zA-Z_]"
-#define FN_DEC "fn"
+#define FN_DEC "$"
 #define ASSIGN "="
-#define AT "@"
+#define FN_CALL "@"
+#define COMMENT "#"
 
 #define NEWLINE "\n"
 #define D_QUOTE "\""
-#define MULTIPLE_SEP ','
 #define EOL ';'
 
 typedef struct
@@ -57,9 +58,10 @@ typedef struct
 void init_lexer(FILE *stream);
 void free_lexer();
 token *new_token(token_type type, char *value);
+static token *get_comment();
 static token *get_ident();
 static token *get_str_lit();
-static int next_ch();
+static char next_ch();
 static void nav_back(long offset);
 token *get_token();
 void free_token(token *tk);

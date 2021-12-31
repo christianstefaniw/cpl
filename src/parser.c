@@ -2,6 +2,7 @@
 #include <string.h>
 #include <stdio.h>
 
+#include "errors.h"
 #include "parser.h"
 #include "helpers.h"
 #include "evaluator.h"
@@ -10,8 +11,32 @@ void parse_expression(token *tk)
 {
 }
 
-void parse_fn_dec(token *tk)
+node *parse_fn_dec(token *tk)
 {
+    token *curr_token;
+
+    node *fn_dec_node = malloc(sizeof fn_dec_node);
+    growable_nodes_arr *fn = malloc(sizeof fn);
+
+    init_growable_nodes_arr(fn, 8);
+
+    while (get_token()->type != lbrace)
+        continue;
+
+    while ((curr_token = get_token())->type != rbrace)
+    {
+        node *fn_line = malloc(sizeof fn_line);
+        fn_line = parse_token(curr_token);
+        insert_growable_nodes_arr(fn, fn_line);
+    }
+
+    // add right brace
+    insert_growable_nodes_arr(fn, parse_token(curr_token));
+
+    fn_dec_node->value = tk;
+    fn_dec_node->children = fn;
+
+    return fn_dec_node;
 }
 
 node *parse_fn_call(token *tk)
@@ -23,11 +48,14 @@ node *parse_fn_call(token *tk)
 
     init_growable_nodes_arr(fn_params, 8);
 
-    while (get_token()->type != at)
+    while (get_token()->type != fn_call)
         continue;
 
     while ((curr_token = get_token())->type != scol)
     {
+
+        check_semicolon_error(curr_token->type);
+
         node *param_node = malloc(sizeof param_node);
         param_node = parse_token(curr_token);
         insert_growable_nodes_arr(fn_params, param_node);
@@ -52,6 +80,9 @@ node *parse_assign(token *tk)
     {
         if (curr_token->type == assign)
             continue;
+
+        check_semicolon_error(curr_token->type);
+
         node *rval_node = malloc(sizeof rval_node);
         rval_node = parse_token(curr_token);
         insert_growable_nodes_arr(rval, rval_node);
@@ -76,6 +107,8 @@ node *parse_token(token *tk)
         return parse_fn_call(tk);
     else if (tk->type == assign)
         return parse_assign(tk);
+    else if (tk->type == fn_dec)
+        return parse_fn_dec(tk);
     else
         return parse_generic(tk);
 }
@@ -104,7 +137,7 @@ void parse(FILE *stream)
 
 void init_growable_nodes_arr(growable_nodes_arr *arr, size_t cap)
 {
-    *(arr->nodes) = malloc(cap * sizeof(*(arr->nodes)));
+    arr->nodes = malloc(cap * sizeof(arr->nodes));
     arr->cap = cap;
     arr->len = 0;
 }
@@ -114,7 +147,7 @@ void insert_growable_nodes_arr(growable_nodes_arr *arr, node *elem)
     if (arr->len == arr->cap)
     {
         arr->cap *= 2;
-        *(arr->nodes) = realloc(arr->nodes, arr->cap * sizeof(*(arr->nodes)));
+        arr->nodes = realloc(arr->nodes, arr->cap * sizeof(arr->nodes));
     }
     arr->nodes[arr->len++] = elem;
 }

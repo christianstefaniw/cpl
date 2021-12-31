@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
+#include <stdlib.h>
 #include "helpers.h"
 #include "parser.h"
 
@@ -10,8 +11,8 @@ int is_cpl(char *file_name)
 {
     char buff[strlen(file_name)];
     char *found, *buff_ptr;
-    unsigned int iters;
-    size_t num_dots;
+    size_t iters = 0;
+    size_t num_dots = 0;
 
     strcpy(buff, file_name);
     buff_ptr = buff;
@@ -26,8 +27,9 @@ int is_cpl(char *file_name)
         }
         if (strcmp(found, CPL_EXTENSION) == 0)
             return 1;
-        return 0;
     }
+
+    return 0;
 }
 
 int main(int argc, char *argv[])
@@ -36,7 +38,7 @@ int main(int argc, char *argv[])
     char *cpl_file_name;
 
     cpl_file_name = argv[argc - 1];
-    
+
     if (is_cpl(cpl_file_name))
     {
         if ((cpl_file = fopen(cpl_file_name, "r")) == NULL)
@@ -48,6 +50,7 @@ int main(int argc, char *argv[])
         return 0;
     }
 
+    free(cpl_file);
     fprintf(stderr, "file does not have the .cpl extension!\n");
     return 1;
 }

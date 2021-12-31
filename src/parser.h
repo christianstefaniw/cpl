@@ -8,7 +8,7 @@ typedef struct
 {
     size_t cap;
     size_t len;
-    node *nodes[];
+    node **nodes;
 } growable_nodes_arr;
 
 typedef struct _node
@@ -18,7 +18,7 @@ typedef struct _node
 } node;
 
 void parse_expression(token *tk);
-void parse_fn_dec(token *tk);
+node *parse_fn_dec(token *tk);
 node *parse_fn_call(token *tk);
 node *parse_assign(token *tk);
 node *parse_generic(token *tk);

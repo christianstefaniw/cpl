@@ -11,6 +11,8 @@
         "typeinfo": "c",
         "evaluator.h": "c",
         "parser.h": "c",
-        "compare": "c"
+        "compare": "c",
+        "built_in_fn.h": "c",
+        "errno.h": "c"
     }
 }

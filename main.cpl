@@ -1,2 +1,32 @@
-some_var="hello, world";
-print@some_var;
+# this is a comment, it will be ignored by cpl
+
+# below is a function declaration
+my_func${
+    print@"run in my_func function";
+}
+
+# below is how you call a function
+my_func@;
+
+# must include semi-colon or error thrown
+# my_func@ -> this code will not run
+
+# print statements are also built in
+print@"hello, world";
+print@12345;
+
+# there are also variables
+my_int_variable=4;
+my_str_variable= "stored in variable";
+
+# you can print variables
+print@my_int_variable;
+print@my_str_variable;
+
+# you can also print variables in a function
+print_vars_func${
+    print@my_int_variable;
+    print@my_str_variable;
+}
+
+print_vars_func@;

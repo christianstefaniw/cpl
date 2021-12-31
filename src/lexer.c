@@ -3,7 +3,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <errno.h>
 #include <regex.h>
+
 #include "lexer.h"
 #include "helpers.h"
 
@@ -35,6 +37,20 @@ token *new_token(token_type type, char *value)
     return new_tk;
 }
 
+static token *get_comment()
+{
+    token *tk;
+    char curr_char;
+
+    while ((curr_char = next_ch()) != NEWLINE[0])
+    {
+        if (curr_char == EOF)
+            break;
+    }
+
+    return new_token(comment, "");
+}
+
 static token *get_ident()
 {
     token_type tk_type;
@@ -50,18 +66,25 @@ static token *get_ident()
     {
         insert_growable_buff(&ident_g, curr_char);
         curr_char = next_ch();
+
+        if (curr_char == EOF)
+            fprintf(stderr, "end of file reached while lexing identifier");
     }
 
     peeked_char = peek_ch();
     tk_type = get_ident_type(ident_g.buffer, peeked_char);
+
     return new_token(tk_type, ident_g.buffer);
 }
 
 static token_type get_ident_type(char *tk_value, char next_char)
 {
-    if (strcmp(tk_value, FN_DEC) == 0)
+    if (strcmp(&next_char, FN_DEC) == 0)
+    {
+        next_ch();
         return fn_dec;
-    else if (strcmp(&next_char, AT) == 0)
+    }
+    else if (strcmp(&next_char, FN_CALL) == 0)
         return fn_call;
     else if (strcmp(&next_char, ASSIGN) == 0)
         return assign;
@@ -103,9 +126,9 @@ static token *get_str_lit()
     return new_token(string, str_g.buffer);
 }
 
-static int next_ch()
+static char next_ch()
 {
-    return fgetc(_lxr->stream);
+    return (char)fgetc(_lxr->stream);
 }
 
 static void nav_back(long offset)
@@ -120,13 +143,15 @@ char peek_ch()
     c = fgetc(_lxr->stream);
     ungetc(c, _lxr->stream);
 
-    return c;
+    return (char)c;
 }
 
 token *get_token()
 {
     while ((_lxr->curr_char_buf[0] = next_ch()) != EOF)
     {
+        if (_lxr->curr_char_buf[0] == NEWLINE[0])
+            return new_token(newline, _lxr->curr_char_buf);
         if (isspace(_lxr->curr_char_buf[0]))
             continue;
         else if (strcmp(SCOL, _lxr->curr_char_buf) == 0)
@@ -160,8 +185,10 @@ token *get_token()
             return new_token(subt, _lxr->curr_char_buf);
         else if (strcmp(DIVI, _lxr->curr_char_buf) == 0)
             return new_token(divi, _lxr->curr_char_buf);
-        else if (strcmp(AT, _lxr->curr_char_buf) == 0)
-            return new_token(at, _lxr->curr_char_buf);
+        else if (strcmp(FN_CALL, _lxr->curr_char_buf) == 0)
+            return new_token(fn_call, _lxr->curr_char_buf);
+        else if (strcmp(COMMENT, _lxr->curr_char_buf) == 0)
+            return get_comment();
         else
         {
             nav_back(-1L);

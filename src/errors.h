@@ -1,0 +1,1 @@
+void check_semicolon_error(int tk_type);
