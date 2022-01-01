@@ -1,6 +1,3 @@
-# this is a comment, it will be ignored by cpl
-
-# below is a function declaration
 my_func${
     print@"run in my_func function";
 }
@@ -15,7 +12,7 @@ my_func@;
 print@"hello, world";
 print@12345;
 
-# there are also variables
+# there are also variables (these variables are global)
 my_int_variable=4;
 my_str_variable= "stored in variable";
 
@@ -30,3 +27,13 @@ print_vars_func${
 }
 
 print_vars_func@;
+
+# there are also local variables
+func_with_local_vars${
+    local="I'm local!";
+    print@local;
+}
+
+func_with_local_vars@;
+
+# print@local; <- this will cause an error

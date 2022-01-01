@@ -1,1 +1,1 @@
-void print_fn(node *n, node *program);
+void print_fn(node *n);

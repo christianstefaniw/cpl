@@ -4,6 +4,20 @@ My first attempt at making a programming language! I made this language from scr
   
 CPL only works on Linux *
 
+### Language Features:
+- variables
+- print statements
+- functions
+- scope
+
+### How CPL Code is Run:
+1. Lexer
+    - Turns the raw text into tokens with a type and a value to be read by the parser
+2. Parser
+    - Parses the given tokens into an AST (Abstract Syntax Tree) to be read by the evaluator
+3. Evaluator
+    - Traverses the AST and runs the commands
+
 
 Here is a small sample program
 ```
@@ -24,7 +38,7 @@ my_func@;
 print@"hello, world";
 print@12345;
 
-# there are also variables
+# there are also variables (these variables are global)
 my_int_variable=4;
 my_str_variable= "stored in variable";
 
@@ -39,6 +53,17 @@ print_vars_func${
 }
 
 print_vars_func@;
+
+# there are also local variables
+func_with_local_vars${
+    local="I'm local!";
+    print@local;
+}
+
+func_with_local_vars@;
+
+# print@local; <- this will cause an error
+
 ```
 
 output:
@@ -50,4 +75,5 @@ hello, world
 stored in variable
 4
 stored in variable
+I'm local!
 ```
