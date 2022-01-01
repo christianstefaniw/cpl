@@ -14,7 +14,7 @@ print@12345;
 
 # there are also variables (these variables are global)
 my_int_variable=4;
-my_str_variable= "stored in variable";
+my_str_variable="stored in variable";
 
 # you can print variables
 print@my_int_variable;

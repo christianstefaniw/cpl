@@ -16,7 +16,7 @@ CPL only works on Linux *
 2. Parser
     - Parses the given tokens into an AST (Abstract Syntax Tree) to be read by the evaluator
 3. Evaluator
-    - Traverses the AST and runs the commands
+    - Traverses and evaluates the AST
 
 
 Here is a small sample program
@@ -39,8 +39,9 @@ print@"hello, world";
 print@12345;
 
 # there are also variables (these variables are global)
+# there can't be spaces between the equal sign
 my_int_variable=4;
-my_str_variable= "stored in variable";
+my_str_variable="stored in variable";
 
 # you can print variables
 print@my_int_variable;
