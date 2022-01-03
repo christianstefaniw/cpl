@@ -1,6 +1,6 @@
 # CPL
 
-[![Lines of code](https://img.shields.io/tokei/lines/github/christianstefaniw/cpl)
+![Lines of code](https://img.shields.io/tokei/lines/github/christianstefaniw/cpl)
 
 My first attempt at making a programming language! I made this language from scratch following no tutorials. I did a couple hours of research to learn about the components needed to build an interpreted language (lexer, parser, evaluator, Abstract Syntax Tree, etc) and then built each component from scratch based on articles descriptions of them. Obviously this language is very basic and not super well put togehter (whoops memory management :(, documentation, tests, etc) but as a project that I did only for learning I am quite pleased with the amount of knowledge that I gained.  
   
